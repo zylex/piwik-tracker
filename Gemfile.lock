@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    piwik-tracker (0.1.0)
+    piwik-tracker (0.1.1)
       patron
 
 GEM

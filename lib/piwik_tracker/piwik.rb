@@ -82,6 +82,7 @@ module PiwikTracker
       def initialize(piwik, auth_token = nil)
         @piwik = piwik
         @custom_variables = []
+        @browser_device = {}
         @data = {}
         @data[:token_auth] = auth_token if auth_token
       end
@@ -117,7 +118,7 @@ module PiwikTracker
       # value - Custom variable value
       def custom_variable(slot_id, name, value)
         raise "invalid slot id, has to be between 1 and 5" unless (1..5).include?(slot_id)
-        @custom_variables[slot_id - 1] = [name, value]
+        @custom_variables[slot_id] = [name, value]
         self
       end
       
@@ -130,8 +131,8 @@ module PiwikTracker
         @data[:user_agent] = name
         self
       end
-      
-      # Overrides server date and time for the tracking requests. 
+
+      # Overrides server date and time for the tracking requests.
       # By default Piwik will track requests for the "current datetime" but this function allows you 
       # to track visits in the past.
       # time - ruby Time instance
@@ -156,7 +157,32 @@ module PiwikTracker
         self
       end
       
-      
+      def new_visit
+        @data[:new_visit] = 1
+        self
+      end
+
+      def latitude(latitude)
+        @data[:lat] = latitude
+      end
+
+      def longitude(longitude)
+        @data[:long] = longitude
+      end
+
+      def country_code(country_code)
+        @data[:country] = country_code
+      end
+
+      def city(city)
+        @data[:city] = city
+      end
+
+      def region(region_code)
+        @data[:region] = region_code
+      end
+
+
       
       # Tracking functions
       ########################### 
@@ -182,12 +208,19 @@ module PiwikTracker
       def track_action(action_url, action_type)
         @piwik.track request_params.merge(action_type => action_url, :redirect => '0')
       end
+
+      def track_event(category, action, name = nil, value = nil)
+        params = request_params.merge :e_c => category, :e_a => action
+        params[:e_n] = name if name
+        params[:e_v] = value if value
+        @piwik.track params
+      end
     
       protected
       
       def request_params
         @data.dup.tap do |params|
-          params[:_cvar] = @custom_variables.to_json if @custom_variables.any?
+          params[:cvar] = @custom_variables.to_json if @custom_variables.any?
         end
       end
     

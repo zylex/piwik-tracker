@@ -82,7 +82,6 @@ module PiwikTracker
       def initialize(piwik, auth_token = nil)
         @piwik = piwik
         @custom_variables = []
-        @browser_device = {}
         @data = {}
         @data[:token_auth] = auth_token if auth_token
       end

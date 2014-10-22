@@ -23,6 +23,9 @@ module PiwikTracker
     # base_uri - the location of your Piwik installation, i.e. 'http://yoursite.com/piwik'.
     # site_id  - Id of the site to be tracked
     def initialize(base_uri, site_id)
+      unless base_uri.end_with? "/"
+        base_uri = "#{base_uri}/"
+      end
       @base_uri = base_uri
       @site_id = site_id
     end
@@ -44,7 +47,7 @@ module PiwikTracker
     def send_request(params)
       headers = { 'Accept-Language' => params.delete(:browser_language) }
       headers['User-Agent'] = params.delete(:user_agent) if params.key?(:user_agent)
-      url = "piwik.php?#{hash_to_querystring(params)}"
+      url = "#{@base_uri}piwik.php?#{hash_to_querystring(params)}"
       logger.debug "Piwik request:\n#{url}\n#{headers.inspect}"
       http.get url, headers
     end

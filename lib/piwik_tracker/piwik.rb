@@ -163,22 +163,27 @@ module PiwikTracker
 
       def latitude(latitude)
         @data[:lat] = latitude
+        self
       end
 
       def longitude(longitude)
         @data[:long] = longitude
+        self
       end
 
       def country_code(country_code)
         @data[:country] = country_code
+        self
       end
 
       def city(city)
         @data[:city] = city
+        self
       end
 
       def region(region_code)
         @data[:region] = region_code
+        self
       end
 
 

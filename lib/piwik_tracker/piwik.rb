@@ -49,7 +49,16 @@ module PiwikTracker
       headers['User-Agent'] = params.delete(:user_agent) if params.key?(:user_agent)
       path = "piwik.php?#{hash_to_querystring(params)}"
       logger.debug "Piwik request:\n#{path}\n#{headers.inspect}"
-      http.get path, headers
+      sent = false
+      while not sent
+        begin
+          http.get path, headers
+          sent = true
+        rescue Patron::TimeoutError
+          sent = false
+          sleep 1
+        end
+      end
     end
 
     def http
